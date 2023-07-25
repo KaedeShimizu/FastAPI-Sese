@@ -8,7 +8,7 @@ import random
 # 直接返回一个可用链接
 # 需要传入一些参数，具体参数见文档
 def getARandomLink(db, proxy, size, r18, keywords):
-    with open(f"data\\{db}", "r", encoding="utf-8") as f:
+    with open(f"data/{db}", "r", encoding="utf-8") as f:
         json_data = json.load(f)
         # R18判断
         if r18 == 1:
@@ -112,8 +112,5 @@ def direct(
 ):
     return RedirectResponse(getARandomLink(db, proxy, size, r18, keywords))
 
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+import uvicorn
+uvicorn.run(app, host="127.0.0.1", port=8000)
