@@ -8,7 +8,7 @@ import random
 # 默认的代理地址
 default_proxy = "pixiv.yuki.sh"
 # 默认的数据库（data文件夹下）
-default_data = "jitsu.json"
+default_data = "Kaede.json"
 # 文档官网地址
 default_docs = "https://suzumi.netlify.app/"
 # 默认r18选项
@@ -46,10 +46,12 @@ def getARandomLink(db, proxy, r18, keywords):
                 if keywords in i["tags"]:
                     tmp_data.append(i)
             json_data = tmp_data
-
         length = len(json_data)
         link = json_data[random.randint(0, length)]["url"]
-        return link.replace("i.pximg.net", proxy)
+        # 这里判断一下是否需要代理，不需要的话就是默认随机
+        if not proxy:
+            return link.replace("i.pximg.net", proxy)
+        return link
 
 # 返回一个随机的json
 # 这里给一个数量参数，更加方便一些
@@ -62,7 +64,7 @@ def getARandomJson(db, r18, keywords, num):
             tmp_data = []
             # 开始便利json文件，筛选出所有的r18内容
             for i in json_data:
-                if i["r18"]:
+                if i["r18"] == 1:
                     tmp_data.append(i)
             json_data = tmp_data
 
@@ -71,7 +73,7 @@ def getARandomJson(db, r18, keywords, num):
             tmp_data = []
             # 开始便利json文件，筛选出所有的r18内容
             for i in json_data:
-                if not i["r18"]:
+                if i["r18"] == 0:
                     tmp_data.append(i)
             json_data = tmp_data
 
