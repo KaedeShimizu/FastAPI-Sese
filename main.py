@@ -6,7 +6,7 @@ import random
 
 # 初始化一些变量，方便后期修改，或者迭代
 # 默认的代理地址
-default_proxy = "i-cf.pximg.net"
+default_proxy = "pixiv.yuki.sh"
 # 默认的数据库（data文件夹下）
 default_data = "setu.json"
 # 默认图片尺寸
