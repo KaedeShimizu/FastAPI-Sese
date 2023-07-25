@@ -112,5 +112,8 @@ def direct(
 ):
     return RedirectResponse(getARandomLink(db, proxy, size, r18, keywords))
 
-import uvicorn
-uvicorn.run(app, host="127.0.0.1", port=8000)
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=8000)
