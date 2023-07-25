@@ -7,23 +7,12 @@ tags:
   - python
 ---
 
-# FastAPI Example
+# 更新日志
 
-This example starts up a [FastAPI](https://fastapi.tiangolo.com/) server.
+## 2023.7.25
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/-NvLj4?referralCode=CRJ8FE)
-## ✨ Features
+把所有的反代地址默认设置为官方的反代地址：`i-cf.pximg.net`
 
-- FastAPI
-- [Hypercorn](https://hypercorn.readthedocs.io/)
-- Python 3
+取消默认跳转到文档页面
 
-## 💁‍♀️ How to use
-
-- Clone locally and install packages with pip using `pip install -r requirements.txt`
-- Run locally using `hypercorn main:app --reload`
-
-## 📝 Notes
-
-- To learn about how to use FastAPI with most of its features, you can visit the [FastAPI Documentation](https://fastapi.tiangolo.com/tutorial/)
-- To learn about Hypercorn and how to configure it, read their [Documentation](https://hypercorn.readthedocs.io/)
+更新一个通过`/help`跳转到文档页面的方法

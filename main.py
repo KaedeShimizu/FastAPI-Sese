@@ -4,6 +4,15 @@ from fastapi import FastAPI
 import json
 import random
 
+# 初始化一些变量，方便后期修改，或者迭代
+# 默认的代理地址
+default_proxy = "i-cf.pximg.net"
+# 默认的数据库（data文件夹下）
+default_data = "setu.json"
+# 默认图片尺寸
+default_size = "original"
+# 文档官网地址
+default_docs = "https://kaedeshimizu.gitee.io/docs"
 
 # 直接返回一个可用链接
 # 需要传入一些参数，具体参数见文档
@@ -52,11 +61,11 @@ app = FastAPI()
 @app.get("/")
 def pixivDefault(
     # 使用的数据库，放在data目录下，用json文件
-    db: str = "setu.json",
+    db: str = default_data,
     # 代理地址
-    proxy: str = "pixiv.yuki.sh",
+    proxy: str = default_proxy,
     # 图片尺寸
-    size: str = "original",
+    size: str = default_size,
     # 是否用r18图片 2是随机
     r18: int = 2,
     # 请求次数，默认是1，如果是其他数字那么返回一个json
@@ -76,11 +85,11 @@ def pixivDefault(
 @app.get("/json")
 def json_get(
     # 使用的数据库，放在data目录下，用json文件
-    db: str = "setu.json",
+    db: str = default_data,
     # 代理地址
-    proxy: str = "pixiv.yuki.sh",
+    proxy: str = default_proxy,
     # 图片尺寸
-    size: str = "original",
+    size: str = default_size,
     # 是否用r18图片 2是随机
     r18: int = 2,
     # 请求次数，默认是1，如果是其他数字那么返回一个json
@@ -100,11 +109,11 @@ def json_get(
 @app.get("/direct")
 def direct(
     # 使用的数据库，放在data目录下，用json文件
-    db: str = "setu.json",
+    db: str = default_data,
     # 代理地址
-    proxy: str = "pixiv.yuki.sh",
+    proxy: str = default_proxy,
     # 图片尺寸
-    size: str = "original",
+    size: str = default_size,
     # 是否用r18图片 2是随机
     r18: int = 2,
     # 关键词，可有可无
@@ -112,6 +121,12 @@ def direct(
 ):
     return RedirectResponse(getARandomLink(db, proxy, size, r18, keywords))
 
+# 文档调用，直接302重定向就好
+@app.get("/help")
+def docs():
+    # 直接跳转，不接受参数
+    global default_docs
+    return RedirectResponse(default_docs)
 
 if __name__ == "__main__":
     import uvicorn
