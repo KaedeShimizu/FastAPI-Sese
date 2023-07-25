@@ -49,13 +49,7 @@ from fastapi.responses import RedirectResponse
 app = FastAPI()
 
 
-# 如果直接访问，跳转到文档页面就行
 @app.get("/")
-def root():
-    return RedirectResponse("https://kaedeshimizu.gitee.io/docs/")
-
-
-@app.get("/pixiv")
 def pixivDefault(
     # 使用的数据库，放在data目录下，用json文件
     db: str = "setu.json",
@@ -79,7 +73,7 @@ def pixivDefault(
 
 
 # json的方法get
-@app.get("/pixiv/json")
+@app.get("/json")
 def json_get(
     # 使用的数据库，放在data目录下，用json文件
     db: str = "setu.json",
@@ -103,7 +97,7 @@ def json_get(
 
 
 # 如果是direct的话，没有什么参数，直接返回一张就行
-@app.get("/pixiv/direct")
+@app.get("/direct")
 def direct(
     # 使用的数据库，放在data目录下，用json文件
     db: str = "setu.json",
