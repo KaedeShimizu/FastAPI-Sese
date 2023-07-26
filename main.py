@@ -191,6 +191,11 @@ def direct(
     return RedirectResponse(get_rand_link(db, proxy, r18, tags))
 
 
+@app.get("/version")
+def version():
+    return {"当前版本": "2.0", "最后更新日期": "2023/7/26"}
+
+
 if __name__ == "__main__":
     import uvicorn
 
