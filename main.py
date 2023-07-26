@@ -1,22 +1,48 @@
-# 这个是读取另外一个json文件用的，我试一下怎么样，应该还不错吧
-# 这个json和前面的不一样，这个是一个大的数组，里面存入了一些元素，每个元素都是字典
 from fastapi import FastAPI
 import json
 import random
+from fastapi.responses import RedirectResponse
 
-# 初始化一些变量，方便后期修改，或者迭代
-# 默认的代理地址
-default_proxy = "pixiv.yuki.sh"
+app = FastAPI()
+
+# Init
+default_proxy = "i.pixiv.re"
 # 默认的数据库（data文件夹下）
 default_data = "Kaede.json"
-# 文档官网地址
-default_docs = "https://suzumi.netlify.app/"
 # 默认r18选项
 default_r18 = 0
 
-# 直接返回一个可用链接
-# 需要传入一些参数，具体参数见文档
-def getARandomLink(db, proxy, r18, keywords):
+
+def use_proxy(proxy: str, url: str) -> str:
+    """这个函数是用来把链接修改为代理后的链接用的
+
+    Args:
+        proxy (str): 代理地址
+        url (str): 需要修改的链接
+
+    Returns:
+        str: 修改后的链接
+    """
+    # 链接的标准格式是：https://i.pixiv.re/img-original/
+    # 通过find查找从而确认index
+    index_start = url.find("/") + 1
+    index_end = url.find("/", index_start + 1)
+    url = url.replace(url[index_start + 1 : index_end], proxy)
+    return url
+
+
+def get_rand_link(db: str, proxy: str, r18: int, tags: str) -> str:
+    """获取一个随机的链接
+
+    Args:
+        db (str): 传入的数据库
+        proxy (str): 代理地址
+        r18 (int): 是否是r18
+        tags (str): 查询的关键字
+
+    Returns:
+        str: 修改好的链接
+    """
     with open(f"data/{db}", "r", encoding="utf-8") as f:
         json_data = json.load(f)
         # R18判断
@@ -38,24 +64,37 @@ def getARandomLink(db, proxy, r18, keywords):
                     tmp_data.append(i)
             json_data = tmp_data
 
-        # keywords判断
-        if keywords:
+        # tags
+        if tags:
             tmp_data = []
             # 如果有的话开始遍历判断
             for i in json_data:
-                if keywords in i["tags"]:
+                if tags in i["tags"]:
                     tmp_data.append(i)
             json_data = tmp_data
         length = len(json_data)
         link = json_data[random.randint(0, length)]["url"]
         # 这里判断一下是否需要代理，不需要的话就是默认随机
-        if not proxy:
-            return link.replace("i.pximg.net", proxy)
+        if proxy != None:
+            return use_proxy(proxy, link)
         return link
 
-# 返回一个随机的json
-# 这里给一个数量参数，更加方便一些
-def getARandomJson(db, r18, keywords, num):
+
+def get_rand_json(db: str, r18: int, tags: str, num: int) -> list:
+    """获取一个json数据
+
+    Args:
+        db (str): 使用的数据库
+        r18 (int): 是否是r18
+        tags (str): 关键字
+        num (int): 数量
+
+    Returns:
+        list: json列表
+    """
+    # 先对数量进行一个判断，如果超出去了或者不在范围内直接翻译空数组就是
+    if num < 1 or num > 20:
+        return []
     with open(f"data/{db}", "r", encoding="utf-8") as f:
         json_data = json.load(f)
         # R18判断
@@ -77,12 +116,12 @@ def getARandomJson(db, r18, keywords, num):
                     tmp_data.append(i)
             json_data = tmp_data
 
-        # keywords判断
-        if keywords:
+        # tags
+        if tags:
             tmp_data = []
             # 如果有的话开始遍历判断
             for i in json_data:
-                if keywords in i["tags"]:
+                if tags in i["tags"]:
                     tmp_data.append(i)
             json_data = tmp_data
 
@@ -94,14 +133,22 @@ def getARandomJson(db, r18, keywords, num):
         return temp_arr
 
 
-# 重定向页面
-from fastapi.responses import RedirectResponse
-
-app = FastAPI()
-
-
 @app.get("/")
-def pixivDefault(
+def pixiv_get(
+    # 使用的数据库，放在data目录下，用json文件
+    db: str = default_data,
+    # 是否用r18图片 2是随机
+    r18: int = default_r18,
+    proxy: str = default_proxy,
+    # 关键词，可有可无
+    tags: str = None,
+):
+    # 直接返回302跳转的图片就好
+    return RedirectResponse(get_rand_link(db, proxy, r18, tags))
+
+
+@app.post("/")
+def pixiv_post(
     # 使用的数据库，放在data目录下，用json文件
     db: str = default_data,
     # 是否用r18图片 2是随机
@@ -109,11 +156,9 @@ def pixivDefault(
     # 请求次数，默认是1，如果是其他数字那么返回一个json
     num: int = 1,
     # 关键词，可有可无
-    keywords: str = None,
+    tags: str = None,
 ):
-    # 创建一个临时数组
-    temp_array = getARandomJson(db, r18, keywords, num)
-    return temp_array
+    return get_rand_json(db, r18, tags, num)
 
 
 # json的方法get
@@ -126,11 +171,9 @@ def json_get(
     # 请求次数，默认是1，如果是其他数字那么返回一个json
     num: int = 1,
     # 关键词，可有可无
-    keywords: str = None,
+    tags: str = None,
 ):
-    # 创建一个临时数组
-    temp_array = getARandomJson(db, r18, keywords, num)
-    return temp_array
+    return get_rand_json(db, r18, tags, num)
 
 
 # 如果是direct的话，没有什么参数，直接返回一张就行
@@ -143,11 +186,12 @@ def direct(
     # 是否用r18图片 2是随机
     r18: int = default_r18,
     # 关键词，可有可无
-    keywords: str = None,
+    tags: str = None,
 ):
-    return RedirectResponse(getARandomLink(db, proxy, r18, keywords))
+    return RedirectResponse(get_rand_link(db, proxy, r18, tags))
+
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     uvicorn.run(app, host="127.0.0.1", port=8000)
