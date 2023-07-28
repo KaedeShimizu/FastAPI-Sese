@@ -27,7 +27,7 @@ def use_proxy(proxy: str, url: str) -> str:
     # 通过find查找从而确认index
     index_start = url.find("/") + 1
     index_end = url.find("/", index_start + 1)
-    url = url.replace(url[index_start + 1 : index_end], proxy)
+    url = url.replace(url[index_start + 1: index_end], proxy)
     return url
 
 
@@ -189,11 +189,6 @@ def direct(
     tags: str = None,
 ):
     return RedirectResponse(get_rand_link(db, proxy, r18, tags))
-
-
-@app.get("/version")
-def version():
-    return {"当前版本": "2.0", "最后更新日期": "2023/7/26"}
 
 
 if __name__ == "__main__":
